@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_usersearch_title">Search</string>
+    <string name="feature_usersearch_history">History</string>
+    <string name="feature_usersearch_clear_search_text">Clear search text</string>
+
+    <string name="feature_usersearch_initial_message">Start typing username</string>
+    <string name="feature_usersearch_nothing_found">Nothing found</string>
+
+    <string name="feature_usersearch_loading_error">An error occurred while loading data</string>
+    <string name="feature_usersearch_retry">Retry</string>
+
+</resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="feature_searchhistory_title">Search History</string>
+    <string name="feature_searchhistory_clear">Clear history</string>
+    <string name="feature_searchhistory_generic_error">Unexpected error occurred</string>
+    <string name="feature_searchhistory_retry">Retry</string>
+    <string name="feature_searchhistory_empty">Your search history is empty for now</string>
+
+</resources>
