@@ -7,8 +7,10 @@ import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -59,57 +60,62 @@ internal fun UserReposScreen(
     screenState: ScreenState,
     onRetry: () -> Unit
 ) {
+
     val headerHeight = 200.dp
     val lazyListState = rememberLazyListState()
-    val screenHeight = LocalWindowInfo.current.containerSize.height.dp
-    val contentHeight = screenHeight - headerHeight
 
-    LazyColumn(
-        state = lazyListState,
-        modifier = Modifier
-            .fillMaxWidth()
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxSize()
     ) {
-        item(key = "user_${screenState.user.id}") {
-            UserHeader(
-                user = screenState.user,
-                modifier = Modifier
-                    .height(headerHeight)
-                    .fillMaxWidth()
-                    .parallaxModifier(lazyListState)
-            )
-        }
-        when (screenState) {
-            is ScreenState.Result -> {
-                val userRepos = screenState.repos
-                if (userRepos.isEmpty()) {
-                    item { EmptyReposPlaceholder(contentHeight) }
-                } else {
-                    items(count = userRepos.size, key = { userRepos[it].id }) { index ->
-                        val repo = userRepos[index]
-                        val context = LocalContext.current
-                        val uri = repo.htmlUrl.toUri()
-                        val backgroundColor = MaterialTheme.colorScheme.background.toArgb()
-                        RepositoryItem(
-                            repository = repo,
-                            onClick = { showBrowserWindow(context, uri, backgroundColor) },
-                        )
+        val placeHolderHeight = this.maxHeight - headerHeight
+
+        LazyColumn(
+            state = lazyListState,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            item(key = "user_${screenState.user.id}") {
+                UserHeader(
+                    user = screenState.user,
+                    modifier = Modifier
+                        .height(headerHeight)
+                        .fillMaxWidth()
+                        .parallaxModifier(lazyListState)
+                )
+            }
+
+            when (screenState) {
+                is ScreenState.Result -> {
+                    val userRepos = screenState.repos
+                    if (userRepos.isEmpty()) {
+                        item { EmptyReposPlaceholder(placeHolderHeight) }
+                    } else {
+                        items(count = userRepos.size, key = { userRepos[it].id }) { index ->
+                            val repo = userRepos[index]
+                            val context = LocalContext.current
+                            val uri = repo.htmlUrl.toUri()
+                            val backgroundColor = MaterialTheme.colorScheme.background.toArgb()
+                            RepositoryItem(
+                                repository = repo,
+                                onClick = { showBrowserWindow(context, uri, backgroundColor) },
+                            )
+                        }
                     }
                 }
-            }
 
-            is ScreenState.Error -> {
-                item { ErrorPlaceholder(contentHeight, onRetry) }
-            }
+                is ScreenState.Error -> {
+                    item { ErrorPlaceholder(placeHolderHeight, onRetry) }
+                }
 
-            is ScreenState.Loading -> {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(contentHeight),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
+                is ScreenState.Loading -> {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(placeHolderHeight),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
                     }
                 }
             }
